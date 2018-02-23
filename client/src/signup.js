@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
-import { Link } from 'react-router-dom';
+//import { Link } from 'react-router-dom';
 
 class Signup extends Component {
   constructor(props) {
@@ -82,11 +82,11 @@ class Signup extends Component {
           emAlert: res.emMsg,
           pwAlert: res.pwMsg,
           status: res.updateStatus
-        })
+        });
         console.log("nameMsg" + res.nameMsg);
         console.log("from server", res.updateStatus);
         if (res.updateStatus === true) {
-          console.log("jk")
+       
           this.props.history.push('/signin')
         }
 
@@ -112,14 +112,14 @@ render() {
         <div className='container'>
           
           <form action='/signup' method='post'>
-            <label htmlFor='name'>Name</label>&nbsp;&nbsp;&nbsp;&nbsp;
-          <input type='text' id='name' className="TextField" onChange={this.handleChangeName} value={this.state.name} /> <nobr>{this.state.nameAlert}</nobr><br /><br />
-            <label htmlFor='email'>Email</label>&nbsp;&nbsp;&nbsp;&nbsp;
-          <input type='text' id='email' onChange={this.handleChangeEmail} value={this.state.email} /> <nobr>{this.state.emAlert}</nobr><br /><br />
-            <label htmlFor='pw'>Password</label>
-            <input type='password' id='pw' onChange={this.handleChangePw} value={this.state.pw} /> <nobr>{this.state.pwAlert}</nobr><br /><br />
+            
+          <input type='text' id='name' className="InputField1" onChange={this.handleChangeName} placeholder="Userame" value={this.state.name} /> <nobr className="Alert">{this.state.nameAlert}</nobr><br /><br />
+          
+          <input type='text' id='email' className="InputField1" onChange={this.handleChangeEmail} placeholder="Email" value={this.state.email} /> <nobr className="Alert">{this.state.emAlert}</nobr><br /><br />
+           
+            <input type='password' id='pw' className="InputField1" onChange={this.handleChangePw} placeholder="password" value={this.state.pw} /> <nobr className="Alert">{this.state.pwAlert}</nobr><br /><br />
             <input type="button" value="signup" onClick={this.handleSubmit} className="button" />
-            <a className="Anchor" href="/signin">go to signin page</a>
+            <a className="Anchor" href="/signin">Signin now</a>
           </form>
           
         </div>

@@ -98,9 +98,9 @@ app.post('/signin', function (req, res) {
           changedStat = true;
           console.log("in mongo" + changedStat)
           res.json({
-            changedStat
+            changedStat,dbName
           });
-          console.log("after res " + changedStat)
+          console.log("after res " + changedStat+" "+dbName)
 
         } else {
           console.log('notmatched')

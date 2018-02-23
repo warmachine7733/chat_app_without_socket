@@ -2,10 +2,57 @@
   position: relative;
   left:240px;
 }
+a {
+  text-decoration: none;
+}
+.Alert{
+  color:red;
+
+}
+a:hover {
+  color:green;
+}
+a:active{
+  color:rgb(44, 27, 75);
+}
+.InputField1{
+  position: relative;
+  left:100px;
+  width: 250px;
+  background: #fff;
+  color: #a3a3a3;
+  font: inherit;
+  box-shadow: 0 6px 10px 0 rgba(0, 0, 0 , .1);
+  border: 0;
+  outline: 0;
+  padding: 22px 18px;
+
+
+
+  
+}
+.InputField2{
+  position: relative;
+  left:100px;
+  width:250px;
+  background: #fff;
+  color: #a3a3a3;
+  font: inherit;
+  box-shadow: 0 6px 10px 0 rgba(0, 0, 0 , .1);
+  border: 0;
+  outline: 0;
+  padding: 22px 18px;
+}
+.RegAnchor{
+  position:relative; 
+  left:190px;
+  top:50px;
+}
 .Anchor{
+  color:rgb(44, 27, 75);
   position: relative;
   top:60px;
-  left:140px;
+  left:160px;
 }
 .App-logo {
   animation: App-logo-spin infinite 20s linear;
