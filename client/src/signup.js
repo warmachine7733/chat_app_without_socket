@@ -83,6 +83,8 @@ class Signup extends Component {
           pwAlert: res.pwMsg,
           status: res.updateStatus
         });
+        console.log(res.emMsg);
+        console.log(this.state.nameAlert);
         console.log("nameMsg" + res.nameMsg);
         console.log("from server", res.updateStatus);
         if (res.updateStatus === true) {
@@ -121,7 +123,7 @@ render() {
             <input type="button" value="signup" onClick={this.handleSubmit} className="button" />
             <a className="Anchor" href="/signin">Signin now</a>
           </form>
-          
+                
         </div>
       </div >
     );

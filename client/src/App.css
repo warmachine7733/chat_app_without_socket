@@ -1,14 +1,17 @@
 .App {
   position: relative;
-  left:240px;
+  left:200px;
 }
 a {
   text-decoration: none;
 }
 .Alert{
   color:red;
-
+  position: relative;
+  top:0px;
+  left:100px;
 }
+
 a:hover {
   color:green;
 }
@@ -26,10 +29,19 @@ a:active{
   border: 0;
   outline: 0;
   padding: 22px 18px;
-
-
-
-  
+}
+.InputField3{
+  position: relative;
+  left:10px;
+  width: 100px;
+  background: #fff;
+  color: #a3a3a3;
+  font: inherit;
+  box-shadow: 0 6px 10px 0 rgba(0, 0, 0 , .1);
+  border: 0;
+  outline: 0;
+  padding: 12px 8px;
+  font-size: 12px;
 }
 .InputField2{
   position: relative;
@@ -63,7 +75,6 @@ label {
   text-align: center;
   margin: 77px 80px;
 }
-
 .button {
     background-color: rgb(62, 138, 173);
     border: none;
@@ -79,7 +90,6 @@ label {
     left:240px;
     display: inline-block;
     position: relative;
-
 }
 .signIn{
   background-color: rgb(44, 27, 75);
@@ -101,6 +111,42 @@ label {
   position: relative;
   top:100px;
   left:400px;
+}
+.Contacts{
+  position: relative;
+  top:10px;
+  left:158px;
+  border:1px solid blue;
+  height:400px;
+  width:10%;
+}
+.Chathead{
+  position: relative;
+  top:-392px;
+  left:350px;
+  border:1px solid blue;
+  height:400px;
+  width:40%;
+}
+.Newmsg{
+  position: relative;
+  top:-380px;
+  left:150px;
+ 
+  height:30px;
+  width:734px;
+}
+.NewMsgText{
+  position: relative;
+  left:100px;
+  width:250px;
+  background: #fff;
+  color: #a3a3a3;
+  font: inherit;
+  box-shadow: 0 6px 10px 0 rgba(0, 0, 0 , .1);
+  border: 0;
+  outline: 0;
+  padding: 22px 18px;
 
 }
 .header{
@@ -124,4 +170,14 @@ label {
 @keyframes App-logo-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+.logoutButton{
+position: relative;
+left:900px;
+top:-825px;
+}
+.HomeContainer{
+  position: relative;
+  left:500px;
+  top:15px;
 }

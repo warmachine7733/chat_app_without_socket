@@ -2,15 +2,14 @@
   "name": "admin",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
-  "devDependencies": {},
+  "author": "",
+  "license": "ISC",
   "scripts": {
     "server": "nodemon server.js",
     "start": "cd client/src && npm start",
     "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn start\""
   },
-  "author": "",
-  "license": "ISC",
+  "proxy": "http://localhost:5000",
   "dependencies": {
     "assert": "^1.4.1",
     "bcrypt": "^1.0.3",
@@ -18,10 +17,9 @@
     "concurrently": "^3.5.1",
     "cors": "^2.8.4",
     "express": "^4.16.2",
-    "mongodb": "^3.0.2",
+    "mongodb": "^2.2.33",
     "mongoose": "^4.13.10",
     "react-dom": "^16.2.0",
     "react-router-server": "^4.2.3"
-  },
-  "proxy": "http:/localhost:5000"
+  }
 }

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 //import Home from './home'
-let user;
+var user;
 
 
 class Signin extends Component {
@@ -12,7 +12,7 @@ class Signin extends Component {
             pw: '',
             status: false,
             credential: '',
-            user:''
+            user: ''
         }
 
         this.nameHandle = this.nameHandle.bind(this);
@@ -31,8 +31,8 @@ class Signin extends Component {
         })
     }
     signinHandle(e) {
-       
 
+         console.log("hi")
 
         var data = {
             'name': this.state.name,
@@ -60,10 +60,12 @@ class Signin extends Component {
                     credential: res.updatedCred,
                     user: res.dbName
                 })
-                
-            
-                console.log("signed in " + user);
 
+                user = res.dbName;
+               
+                console.log("signin " + this.state.user);
+               
+                window.localStorage.setItem("lastname",user)
                 if (res.changedStat === true) {
                     this.props.history.push({
                         pathname: '/home',
@@ -74,34 +76,37 @@ class Signin extends Component {
 
             });
 
+ 
     }
 
     render() {
         return (
             <div>
                 <h1 className="header">Signin</h1>
-            <div className="container">
-                <h5 className="App">{this.state.credential}</h5>
-                <form method="post">
+                <div className="container">
+                    <h5 className="App">{this.state.credential}</h5>
+                    <form method="post">
 
-                  
-            <input type='text' id='name' required onChange={this.nameHandle} placeholder="Username" className="InputField1"/> <br /><br />
-                    
-            <input type='password' id='password' onChange={this.pwHandle} className="InputField2" placeholder="Password"/><br />
-                    <input type="button" value="signin" className="button" onClick={this.signinHandle} />
-                </form>
-             <a href="/" className="RegAnchor">Registration page</a>
-            </div>
+
+                        <input type='text' id='name' required onChange={this.nameHandle} placeholder="Username" className="InputField1" /> <br /><br />
+
+                        <input type='password' id='password' onChange={this.pwHandle} className="InputField2" placeholder="Password" /><br />
+                        <input type="button" value="signin" className="button" onClick={this.signinHandle} />
+                    </form>
+                    <a href="/" className="RegAnchor">Registration page</a>
+                </div>
+
             </div>
         )
     }
+    componentDidMount() {
+       
+    }
 
-  
 }
 
-export const assets = {
-    user,
-}
+
+
 
 
 //export default styles;
