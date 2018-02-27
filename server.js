@@ -8,7 +8,7 @@ var app = new express();
 
 var mongo = require('mongodb');
 var mongoose = require('mongoose');
-
+//var arr = new Array();
 
 mongoose.connect('mongodb://localhost/loginapp');
 var db = mongoose.connection;
@@ -127,37 +127,40 @@ app.post('/home', function (req, res) {
   console.log("sending contact via res");
   var user = req.body.data.user;
   var contact = req.body.data.contact;
-  console.log("whats the contact man", contact);
-    
-    var MongoClient = require('mongodb').MongoClient;
-    var url = 'mongodb://localhost:27017/loginapp';
-    MongoClient.connect(url, function (err, client) {
-      if (err) {
-        console("error " + err);
-      } else {
-        console.log("connection established")
-        var db = client.db('loginapp');
-        db.collection('users').findOne({ name: user }, function (findErr, result) {
-          if (findErr) throw findErr;
+  var arr = req.body.arr;
 
-          var x = result.contact;
-          console.log(x);
-          //console.log(query);
-          // db.users.update({"name":user},{$set:{"user.contact":contact}});
-          //db.collection("users").insert({contact:"jamie"});
-          //db.collection("users").update({"name":user},{$push:{"contact":arr}});
-          db.collection("users").update({ "name": user }, { $set: { "contact": arr } })
-          //console.log(db.collection("users").find({}));
+  console.log("array from frontend", arr);
+  console.log("contact from frontend", contact);
+  var MongoClient = require('mongodb').MongoClient;
+  var url = 'mongodb://localhost:27017/loginapp';
+  MongoClient.connect(url, function (err, client) {
+    if (err) {
+      console("error " + err);
+    } else {
+      console.log("connection established")
+      var db = client.db('loginapp');
+      db.collection('users').findOne({ name: user }, function (findErr, result) {
+        if (findErr) throw findErr;
+        var x = result.contact;
+        console.log("result.contact", x);
+        if (x == undefined || x == null) {
+          db.collection("users").update({ "name": user }, { $set: { "contact": [] } });
+          
+        } else {
+          db.collection("users").update({ "name": user }, { $set: { "contact": x.concat(arr) } })
+          var renderedArr = x.concat(arr);
+        
+        }
+       
+        
+        res.json({
+          arr, renderedArr
+        })
+        client.close();
+      });
+    }
+  });
 
-
-          res.json({
-            arr, x
-          })
-          client.close();
-        });
-      }
-    });
-  
 });
 app.listen(5000, function () {
   console.log(`Listening on port 5000..`);

@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 //import { withRouter } from 'react-router'
 import './App.css';
-var arr = new Array();
-var x = new Array();
+
+//var x = new Array();
+var names = [];
+
 class Home extends Component {
     constructor(props) {
         super(props);
@@ -22,36 +24,47 @@ class Home extends Component {
     }
     logoutOps() {
         console.log(window.localStorage.getItem("lastname"));
-        localStorage.removeItem("lastname")
-        console.log(window.localStorage.getItem("lastname"));
-        this.props.history.push('/signin');
-        localStorage.removeItem("array");
-        console.log(window.localStorage.getItem("array"));
+        localStorage.removeItem("lastname");
+        this.setState({
+            localArr: []
+        }, function() {
+            console.log(window.localStorage.getItem("lastname"));
+            console.log("local arr after logout",this.state.localArr);
+    
+            this.props.history.push('/signin');
+        });
+        
+       
+       
     }
     firedEvent() {
+        var arr =[];
 
+        console.log("local array",this.state.localArr);
         //e.preventDefault();
         var data = {
             "contact": this.state.contact,
             "user": window.localStorage.getItem("lastname"),
-            
+
 
         }
-        if(this.state.contact===""){
+        if (this.state.contact === "") {
 
-        }else{
-        arr.push(this.state.contact);
-        console.log(arr);
+        } else {
+            arr.push(this.state.contact);
+            console.log();
         }
-        //window.localStorage.setItem("array", arr);
-        console.log("state of contact", this.state.contact);
+        //window.localStorage.setItem("array", storedNames);
+        //console.log("state of contact", this.state.contact);
         //console.log(window.localStorage.getItem("array"));
         //console.log("local storage", arr)
+
+        console.log("state of local arr", this.state.localArr)
         fetch('http://localhost:5000/home',
             {
                 method: 'POST',
                 body: JSON.stringify({
-                    data,arr
+                    data, arr
 
                 }),
                 headers: { 'Content-Type': 'application/json' }
@@ -60,12 +73,12 @@ class Home extends Component {
                 res.json()
             )
             .then((res) => {
-                x = res.arr;
+
                 this.setState({
-                    localArr: res.arr
+                    localArr: res.renderedArr
                 })
-                console.log(this.state.localArr);
-                console.log("from server", res.x);
+                console.log("res.renderedArr ", this.state.localArr);
+                console.log("from server", res.arr);
             });
     }
     render() {
@@ -80,11 +93,12 @@ class Home extends Component {
                             <input type="button" value="add" onClick={this.firedEvent} />
                         </form>
                         <ul>
-                            {this.state.localArr.map(function (name, index) {
+                            
+                            {this.state.localArr==undefined?console.log():this.state.localArr.map(function (name, index) {
                                 return <li key={index}>{name}</li>;
-                                
+
                             })
-                        }
+                            }
                         </ul>
 
                     </div>
