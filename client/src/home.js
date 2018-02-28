@@ -24,7 +24,7 @@ class Home extends Component {
     }
     handleContacts(e) {
         this.setState({
-            contact: e.target.value
+            contact: e.target.value.toLowerCase()
         })
     }
     logoutOps() {

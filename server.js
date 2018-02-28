@@ -170,7 +170,7 @@ app.post('/home', function (req, res) {
               renderedArr = x;
             } else if (contact === user) {
               cantAddOwn = "cant add yourself in contacts"
-              console.log(cantAddOwn);
+           
               renderedArr = x;
             }
             else {
