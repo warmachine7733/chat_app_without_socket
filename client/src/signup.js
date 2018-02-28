@@ -87,6 +87,7 @@ class Signup extends Component {
         console.log(this.state.nameAlert);
         console.log("nameMsg" + res.nameMsg);
         console.log("from server", res.updateStatus);
+        window.localStorage.setItem("status",res.updateStatus)
         if (res.updateStatus === true) {
        
           this.props.history.push('/signin')

@@ -13,6 +13,8 @@ var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/loginapp');
 var db = mongoose.connection;
 
+var MongoClient = require('mongodb').MongoClient;
+var url = 'mongodb://localhost:27017/loginapp';
 //requiring from model
 var User = require('./model/index');
 var UserSchema = require('./model/index');
@@ -66,7 +68,8 @@ app.post('/', function (req, res) {
     var newUser = new User({
       name: name,
       email: email,
-      password: password
+      password: password,
+      contact: []
     });
     console.log('newUser', newUser);
     newUser.save(function (err, user) {
@@ -123,40 +126,65 @@ app.post('/signin', function (req, res) {
 
 });
 app.post('/home', function (req, res) {
-  console.log("server up")
-  console.log("sending contact via res");
   var user = req.body.data.user;
   var contact = req.body.data.contact;
   var arr = req.body.arr;
-
-  console.log("array from frontend", arr);
-  console.log("contact from frontend", contact);
-  var MongoClient = require('mongodb').MongoClient;
-  var url = 'mongodb://localhost:27017/loginapp';
+  var x;
+  var contactStatus;
+  var contactMsg;
+  var cantAddOwn;
   MongoClient.connect(url, function (err, client) {
     if (err) {
       console("error " + err);
     } else {
       console.log("connection established")
       var db = client.db('loginapp');
-      db.collection('users').findOne({ name: user }, function (findErr, result) {
-        if (findErr) throw findErr;
-        var x = result.contact;
-        console.log("result.contact", x);
-        if (x == undefined || x == null) {
-          db.collection("users").update({ "name": user }, { $set: { "contact": [] } });
-          
+      db.collection('users').findOne({ name: contact }, function (findErr, result) {
+        if (findErr != null) {
+          console.log("not")
+        };
+        if (result === null) {
+          console.log("not found");
+          db.collection('users').findOne({ name: user }, function (err, results) {
+            if (err) throw err;
+            x = results.contact;
+            console.log("results.contact", x);
+            var renderedArr = x;
+            contact === "" ? contactStatus = "" : contactStatus = "not in our db"
+            console.log(contactStatus);
+            res.json({
+              arr, renderedArr, contactStatus
+            })
+
+          });
+
+
         } else {
-          db.collection("users").update({ "name": user }, { $set: { "contact": x.concat(arr) } })
-          var renderedArr = x.concat(arr);
-        
+
+          db.collection('users').findOne({ name: user }, function (err, results) {
+            if (err) throw err;
+            x = results.contact;
+            console.log("results.contact", x);
+            if (x.includes(contact)) {
+              contactMsg = "already added";
+              renderedArr = x;
+            } else if (contact === user) {
+              cantAddOwn = "cant add yourself in contacts"
+              console.log(cantAddOwn);
+              renderedArr = x;
+            }
+            else {
+              db.collection("users").update({ name: user }, { $set: { "contact": x.concat(arr) } });
+              renderedArr = x.concat(arr);
+              console.log(renderedArr);
+            }
+            console.log(cantAddOwn);
+            res.json({
+              arr, renderedArr, contactMsg,cantAddOwn
+            })
+
+          });
         }
-       
-        
-        res.json({
-          arr, renderedArr
-        })
-        client.close();
       });
     }
   });

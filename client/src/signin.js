@@ -99,8 +99,12 @@ class Signin extends Component {
             </div>
         )
     }
-    componentDidMount() {
-       
+    componentWillMount() {
+     
+     console.log("hola "+window.localStorage.getItem("status"));  
+     if(window.localStorage.getItem("status")==true){
+         console.log("successful")
+     }
     }
 
 }
