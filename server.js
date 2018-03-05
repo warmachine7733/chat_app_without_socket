@@ -17,7 +17,8 @@ var MongoClient = require('mongodb').MongoClient;
 var url = 'mongodb://localhost:27017/loginapp';
 //requiring from model
 var User = require('./model/index');
-var UserSchema = require('./model/index');
+//var UserSchema = require('./model/index');
+var Msg = require('./model/msgs.js');
 // User Schema
 /*var UserSchema = mongoose.Schema({
   name: {
@@ -33,6 +34,9 @@ var UserSchema = require('./model/index');
 
 });
 var User = mongoose.model('Users', UserSchema);*/
+
+
+
 
 
 app.use(bodyParser.json());
@@ -129,7 +133,7 @@ app.post('/home', function (req, res) {
   var user = req.body.data.user;
   var contact = req.body.data.contact;
   var arr = req.body.arr;
-  var x;
+  var previousContactArr;
   var contactStatus;
   var contactMsg;
   var cantAddOwn;
@@ -150,7 +154,7 @@ app.post('/home', function (req, res) {
             x = results.contact;
             console.log("results.contact", x);
             var renderedArr = x;
-            contact === "" ? contactStatus = "" : contactStatus = "not in our db"
+            contact === "" || contact == undefined ? contactStatus = "" : contactStatus = "not in our db"
             console.log(contactStatus);
             res.json({
               arr, renderedArr, contactStatus
@@ -163,24 +167,25 @@ app.post('/home', function (req, res) {
 
           db.collection('users').findOne({ name: user }, function (err, results) {
             if (err) throw err;
-            x = results.contact;
-            console.log("results.contact", x);
-            if (x.includes(contact)) {
+            previousContactArr = results.contact;
+            console.log("results.contact", previousContactArr);
+            if (previousContactArr.includes(contact)) {
               contactMsg = "already added";
-              renderedArr = x;
+              renderedArr = previousContactArr;
             } else if (contact === user) {
               cantAddOwn = "cant add yourself in contacts"
-           
-              renderedArr = x;
+
+              renderedArr = previousContactArr;
             }
             else {
-              db.collection("users").update({ name: user }, { $set: { "contact": x.concat(arr) } });
-              renderedArr = x.concat(arr);
+              renderedArr = previousContactArr.concat(arr);
+              db.collection("users").update({ name: user }, { $set: { "contact": previousContactArr.concat(arr) } });
+
               console.log(renderedArr);
             }
             console.log(cantAddOwn);
             res.json({
-              arr, renderedArr, contactMsg,cantAddOwn
+              arr, renderedArr, contactMsg, cantAddOwn
             })
 
           });
@@ -188,8 +193,59 @@ app.post('/home', function (req, res) {
       });
     }
   });
+});
+app.post("/message", function (req, res) {
+  var x = [];
+  var sentFrom = req.body.senderName;
+  var sentTo = req.body.recieverName;
+  message = req.body.RecievedMsg;
+  sentAt = req.body.time;
+  console.log(sentFrom);
+  console.log(sentTo);
+  var selectContact;
+
+  console.log("message sent");
+  console.log(req.body.RecievedMsg);
+  //console.log("to be pushed inside reciever msg", req.body.recieverObj);
+  //console.log("to be pushde inside sender msg", req.body.senderObj);
+  if (sentTo === '' || sentTo == undefined) {
+    selectContact = "select a contact";
+    console.log(selectContact);
+    res.json({
+      selectContact
+    })
+  } else {
+    var newMsg = new Msg({
+      message: message,
+      sentFrom: sentFrom,
+      sentTo: sentTo,
+      sentAt: sentAt,
+    })
+    console.log('newMsg', newMsg);
+    newMsg.save(function (err, Msg) {
+      console.log('1')
+      if (err) throw err;
+      else {
+        db.collection('msgs').find({ $or: [{ sentFrom: sentFrom, sentTo: sentTo }, { sentFrom: sentTo, sentTo: sentFrom }] }).toArray(function (arr, result) {
+          console.log('res', result);
+          console.log('2')
+          x = result;
+          console.log(x);
+          res.json({
+            x, message
+          })
+        });
+      }
+      // console.log(Msg);
+
+    });
+
+    console.log('3')
+  }
+
 
 });
+
 app.listen(5000, function () {
   console.log(`Listening on port 5000..`);
 });

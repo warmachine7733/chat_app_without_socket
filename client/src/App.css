@@ -122,14 +122,7 @@ label {
   height:400px;
   width:15%;
 }
-.Chathead{
-  position: relative;
-  top:-392px;
-  left:350px;
-  border:1px solid blue;
-  height:400px;
-  width:40%;
-}
+
 .Newmsg{
   position: relative;
   top:-380px;
@@ -179,9 +172,9 @@ label {
   to { transform: rotate(360deg); }
 }
 .logoutButton{
-position: relative;
+position: sticky;
 left:900px;
-top:-825px;
+top:2px;
 color: rgb(247, 57, 57);
 }
 .HomeContainer{
@@ -205,10 +198,34 @@ color: rgb(247, 57, 57);
 .sendButton{
   position: relative;
   left:200px;
+  cursor: pointer;
+  top:15px;
+}
+.Chathead{
+  
+  position: relative;
+  top:-392px;
+  left:350px;
+  border:1px solid blue;
+  height:400px;
+  width:40%;
 }
 .ContactTitle{
   position: relative;
   left:35px;
   font-family:cursive;
   top:-2px;
+}
+.sentMsg{
+  position: relative;
+  left:790px;
+  top:-620px; 
+ 
+}
+
+.rcvMsg{
+   position: relative;
+  top:-960px;
+ left:360px;
+
 }
