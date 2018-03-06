@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
-//import { withRouter } from 'react-router'
 import './App.css';
+import { error } from 'util';
 
-//var x = new Array();
+
 var names = [];
-//var xyz;
-//var array2 = [];
 var i;
 
 class Home extends Component {
@@ -21,8 +19,7 @@ class Home extends Component {
             message: '',
             selectContact: '',
             messageArray: [],
-            sentMsg: [],
-            rcvMsg: [],
+
 
         }
 
@@ -33,7 +30,11 @@ class Home extends Component {
         this.sendClick = this.sendClick.bind(this);
         this.radioSelected = this.radioSelected.bind(this);
         this.handleMsg = this.handleMsg.bind(this);
+        // this.checkKey = this.checkKey.bind(this);
     }
+    //checkKey(e){
+    //  console.log(e.which);
+    // }
     handleContacts(e) {
         this.setState({
             contact: e.target.value.toLowerCase()
@@ -105,79 +106,56 @@ class Home extends Component {
                 console.log("from server array", res.arr);
             });
     }
-    sendClick() {
-
-        var array3 = [];
-        var array4 = [];
-        var recieverName = this.state.reciever;
-        var senderName = window.localStorage.getItem("lastname");
-        var RecievedMsg = this.state.message;
-        console.log("message is ", this.state.message);
-        console.log("reciever", recieverName);
-        console.log("sender", senderName);
-        //console.log(JSON.stringify({ senderName: this.state.message }));
-        //time 
-        var D = new Date();
-        var hours = D.getHours().toString();
-        var minutes = D.getMinutes().toString();
-        var seconds = D.getSeconds().toString();
-        console.log(hours, minutes, seconds)
-        var time = hours + minutes + seconds;
-        console.log('time is', time);
-        console.log("msg", RecievedMsg)
-
-
-
-        fetch('http://localhost:5000/message',
-            {
-                method: 'POST',
-                body: JSON.stringify({
-                    RecievedMsg, recieverName, senderName, time
-                }),
-                headers: { 'Content-Type': 'application/json' }
-            })
-            .then(res =>
-                res.json()
-            )
-            .then((res) => {
-                this.setState({
-                    selectContact: res.selectContact,
-                    messageArray: res.x
-                })
-                console.log('from sever', res.message);
-                console.log('from db', res.x);
-               if(this.state.messageArray==undefined){
-
-               }else{
-                for (i = 0; i < this.state.messageArray.length; i++) {
-                    var descriptor1 = Object.getOwnPropertyDescriptor(this.state.messageArray[i], 'sentFrom');
-
-                    if (descriptor1.value == localStorage.getItem('lastname')) {
-                        var descriptor2 = Object.getOwnPropertyDescriptor(this.state.messageArray[i], 'message');
-                        console.log('msg sent from logi', localStorage.getItem('lastname'), ' ', descriptor2.value);
-                        array3.push(descriptor2.value);
-                        this.setState({
-                            sentMsg: array3
-                        })
-                        console.log(this.state.sentMsg);
-                    }
-                    var descriptor3 = Object.getOwnPropertyDescriptor(this.state.messageArray[i], 'sentFrom')
-                    if (descriptor3.value == this.state.reciever) {
-                        var descriptor4 = Object.getOwnPropertyDescriptor(this.state.messageArray[i], 'message')
-                        console.log('msg sent from', this.state.reciever, '  ', descriptor4.value);
-                        array4.push(descriptor4.value);
-                        this.setState({
-                            rcvMsg: array4
-                        })
-                    }
-                }
-                console.log(this.state.sentMsg);
-                console.log(this.state.rcvMsg);
-            }
-            })
-
-
+    sendClick(e) {
         
+        if (e.which === 13) {
+
+            var recieverName = this.state.reciever;
+            var senderName = window.localStorage.getItem("lastname");
+            var RecievedMsg = this.state.message;
+            console.log("message is ", this.state.message);
+            console.log("reciever", recieverName);
+            console.log("sender", senderName);
+            //console.log(JSON.stringify({ senderName: this.state.message }));
+            //time 
+            var D = new Date();
+            var hours = D.getHours().toString();
+            var minutes = D.getMinutes().toString();
+            var seconds = D.getSeconds().toString();
+            console.log(hours, minutes, seconds)
+            var time = hours + minutes + seconds;
+            console.log('time is', time);
+            console.log("msg", RecievedMsg)
+            if (RecievedMsg === '') {
+                console.log("empty cant be sent")
+
+            } else {
+
+                fetch('http://localhost:5000/message',
+                    {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            RecievedMsg, recieverName, senderName, time
+                        }),
+                        headers: { 'Content-Type': 'application/json' }
+                    })
+                    .then(res =>
+                        res.json()
+                    )
+                    .then((res) => {
+                        this.setState({
+                            selectContact: res.selectContact,
+                            messageArray: res.x,
+                            message: ''
+                        })
+                        console.log('from sever', res.message);
+                        console.log('from db', res.x);
+                        console.log(this.state.message);
+
+                    })
+
+            }
+        }
     }
     radioSelected(e) {
         var sendThis = e.target.value;
@@ -190,10 +168,26 @@ class Home extends Component {
 
             })
         }
-          
-        console.log(this.state.Reciever);
-        console.log("send and verify", sendThis);
+        var loggedInUser = window.localStorage.getItem("lastname");
+        fetch('http://localhost:5000/getMsg',
+            {
+                method: 'POST',
+                body: JSON.stringify({
+                    sendThis, loggedInUser
+                }),
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(res =>
+                res.json()
+            )
+            .then((res) => {
+                this.setState({
+                    messageArray: res.x
+                })
+                console.log('ok testing', res.x)
 
+
+            })
     }
     render() {
         return (
@@ -222,40 +216,60 @@ class Home extends Component {
 
                         </ul>
                     </div>
+                    <div className="chatContainer">
+                        <div className="chatbox">
+                            {this.state.messageArray == [] ? console.log() : this.state.messageArray.map(function (msgs, i) {
+                                //console.log('all msgs', msgs.message);
+                                if (msgs.sentFrom === localStorage.getItem("lastname")) {
 
-                <i class="material-icons logoutButton" onClick={this.logoutOps} >power_settings_new</i>
- 
-                    <div className="Chathead">
+                                    return (
 
+                                        <span class="chatlogs">
+
+                                            <span class="chat self">
+                                                <span class="user-photo"></span>
+                                                <span class="chat-message">{msgs.message}</span>
+                                            </span>
+
+                                        </span>
+
+                                    );
+
+                                } else {
+
+                                    return (
+                                        <span class="chat friend">
+                                            <span class="user-photo"> </span>
+                                            <span class="chat-message">{msgs.message}</span>
+                                        </span>
+                                    );
+                                }
+
+
+                            })}</div>
+                        <div className="Newmsg">
+                            <input type="text" className="EnterMsgField" placeholder="" value={this.state.message} onChange={this.handleMsg} onKeyPress={this.sendClick} />
+                            <i className="material-icons sendButton" onClick={this.sendClick} >send</i>
+                        </div>
                     </div>
+                    <i class="material-icons logoutButton" onClick={this.logoutOps} >power_settings_new</i>
 
 
-                    <div className="Newmsg">
-                        <input type="text" className="EnterMsgField" placeholder="enter" onChange={this.handleMsg} />
-                        <i className="material-icons sendButton" onClick={this.sendClick} >send</i>
-                    </div>
 
-                    <span className="sentMsg">{this.state.sentMsg.map(function (msg, index) {
-                        return (
-                            <div>
-                                <span>{msg}</span>
-                            </div>
-                        );
-                    })}</span>
-                    <span className="rcvMsg">{this.state.rcvMsg.map(function (msgs, index) {
-                        return (
-                            <div>
-                                <span>{msgs}</span>
-                            </div>
-                        );
-                    })}</span>
 
-                    
+
+
+
+
+
+
+
                 </div>
-                
+
+
 
             </div>
-                   );
+        );
     }
     componentWillMount() {
         this.firedEvent();

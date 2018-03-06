@@ -1,5 +1,3 @@
-
-
 var express = require('express');
 var bodyParser = require('body-parser');
 var cors = require('cors');
@@ -177,6 +175,10 @@ app.post('/home', function (req, res) {
 
               renderedArr = previousContactArr;
             }
+            else if (contact == undefined) {
+              contactMsg = "enter a name";
+              renderedArr = previousContactArr;
+            }
             else {
               renderedArr = previousContactArr.concat(arr);
               db.collection("users").update({ name: user }, { $set: { "contact": previousContactArr.concat(arr) } });
@@ -237,15 +239,27 @@ app.post("/message", function (req, res) {
         });
       }
       // console.log(Msg);
-
     });
-
     console.log('3')
   }
-
-
 });
 
+//getting msgs on click of radios
+app.post("/getMsg", function (req, res) {
+  var x = [];
+  console.log("got it")
+  console.log(req.body);
+  var sentTo = req.body.sendThis;
+  var sentFrom = req.body.loggedInUser;
+  db.collection('msgs').find({ $or: [{ sentFrom: sentFrom, sentTo: sentTo }, { sentFrom: sentTo, sentTo: sentFrom }] }).toArray(function (arr, result) {
+    console.log(result);
+    x = result;
+    res.json({
+      x
+    })
+  });
+
+});
 app.listen(5000, function () {
   console.log(`Listening on port 5000..`);
 });
