@@ -153,8 +153,9 @@ label {
 .AddButton
 {
   position: relative;
-  left:20px;
-  top:2px;
+  left:24px;
+  top:11px;
+  cursor: pointer;
 }
 .App-title {
   font-size: 1.5em;
@@ -176,6 +177,7 @@ position: relative;
 left:950px;
 top:-800px;
 color: rgb(247, 57, 57);
+cursor: pointer;
 }
 .HomeContainer{
   position: relative;
@@ -242,9 +244,10 @@ body{
   padding: 25px;
   margin:20px auto;
   box-shadow: 0 3px #ccc;
-  overflow-x: hidden;
-  overflow-y:scroll;
+  overflow-x:hidden;
+  overflow-y: scroll;
   border: 1px solid black;
+  
 }
 .chatlogs{
    padding: 10px;
@@ -264,12 +267,18 @@ body{
    height: 60px;
    background: #ccc;
    border-radius: 50%;
+   font-family: cursive;
+   overflow: hidden;
+ 
+}
+.chat .user-photo{
+
 }
 .chat .chat-message{
    width:80%;
    padding: 15px;
    margin:5px 10px 0;
-   color: #2e6454;
+   color: #741515;
    border-radius: 10px;
    
    font-size: 18px;
@@ -281,4 +290,22 @@ body{
   background: #1ddced;
   order:-1;
   text-align:right;
+}
+.reciever-chat-time{
+  font-size: 10px;
+  position: relative;
+  left:360px;
+  top:-21px;
+}
+.sender-chat-time{
+  font-size: 10px;
+  position: relative;
+  left:20px;
+  top:-18px;
+}
+.adjust-tick{
+  position: relative;
+  top:-18px;
+  left:22px;
+  font-size:16px;
 }

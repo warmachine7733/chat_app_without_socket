@@ -30,11 +30,9 @@ class Home extends Component {
         this.sendClick = this.sendClick.bind(this);
         this.radioSelected = this.radioSelected.bind(this);
         this.handleMsg = this.handleMsg.bind(this);
-        // this.checkKey = this.checkKey.bind(this);
+
     }
-    //checkKey(e){
-    //  console.log(e.which);
-    // }
+
     handleContacts(e) {
         this.setState({
             contact: e.target.value.toLowerCase()
@@ -63,6 +61,8 @@ class Home extends Component {
 
     }
     firedEvent() {
+
+
         var arr = [];
 
 
@@ -96,7 +96,8 @@ class Home extends Component {
                     localArr: res.renderedArr,
                     contactStat: res.contactStatus,
                     contactMsg: res.contactMsg,
-                    cantAddOwn: res.cantAddOwn
+                    cantAddOwn: res.cantAddOwn,
+                    contact: ''
                 })
 
                 console.log("message ie u cant add yourself", res.cantAddOwn);
@@ -105,10 +106,11 @@ class Home extends Component {
                 console.log("res.renderedArr ", this.state.localArr);
                 console.log("from server array", res.arr);
             });
+
     }
     sendClick(e) {
-        
-        if (e.which === 13) {
+        var recieverName = this.state.reciever;
+        if (e.which === 13 || e.which == undefined) {
 
             var recieverName = this.state.reciever;
             var senderName = window.localStorage.getItem("lastname");
@@ -123,7 +125,7 @@ class Home extends Component {
             var minutes = D.getMinutes().toString();
             var seconds = D.getSeconds().toString();
             console.log(hours, minutes, seconds)
-            var time = hours + minutes + seconds;
+            var time = hours + ":" + minutes + ":" + seconds;
             console.log('time is', time);
             console.log("msg", RecievedMsg)
             if (RecievedMsg === '') {
@@ -151,9 +153,7 @@ class Home extends Component {
                         console.log('from sever', res.message);
                         console.log('from db', res.x);
                         console.log(this.state.message);
-
                     })
-
             }
         }
     }
@@ -164,8 +164,10 @@ class Home extends Component {
         } else {
             this.setState({
                 reciever: sendThis,
-                selectContact: ''
-
+                selectContact: '',
+                contactMsg: '',
+                cantAddOwn: '',
+                contactStat: ''
             })
         }
         var loggedInUser = window.localStorage.getItem("lastname");
@@ -185,95 +187,70 @@ class Home extends Component {
                     messageArray: res.x
                 })
                 console.log('ok testing', res.x)
-
-
             })
     }
     render() {
         return (
-
             <div>
                 <div>
                     <h5 className="HomeContainer">welcome <b>{window.localStorage.getItem("lastname")}</b></h5>
                     <div className="Contacts">
                         <span className="ContactTitle">Contacts</span>
                         <form action="/home" >
-                            <input type="text" placeholder="add contacts" className="InputField3" onChange={this.handleContacts} required />
-                            <input type="button" value="add" onClick={this.firedEvent} className="AddButton" />
+                            <input type="text" placeholder="add contacts" className="InputField3" onChange={this.handleContacts} required value={this.state.contact} />
+                            <i onClick={this.firedEvent} className=" material-icons AddButton" >library_add</i>
                         </form>
                         <span>{this.state.contactStat}{this.state.contactMsg}{this.state.cantAddOwn}{this.state.selectContact}</span>
                         <br /><br /><br />
-
                         <ul onClick={this.radioSelected}>
                             {this.state.localArr === undefined ? console.log() : this.state.localArr.map(function (name, index) {
                                 return (
                                     <div>
-                                        <input type="radio" name="kal" value={name} key={name} />{name}&nbsp;<span></span>
+                                        <input type="radio" name="kal" value={name} key={name.id} />{name}&nbsp;<span></span>
                                     </div>
                                 );
                             })
                             }
-
                         </ul>
                     </div>
                     <div className="chatContainer">
                         <div className="chatbox">
-                            {this.state.messageArray == [] ? console.log() : this.state.messageArray.map(function (msgs, i) {
-                                //console.log('all msgs', msgs.message);
+                            {this.state.messageArray == undefined || this.state.messageArray == [] ? console.log() : this.state.messageArray.map(function (msgs, i) {
                                 if (msgs.sentFrom === localStorage.getItem("lastname")) {
-
                                     return (
-
                                         <span class="chatlogs">
-
                                             <span class="chat self">
-                                                <span class="user-photo"></span>
+                                                <span class="user-photo">{msgs.sentFrom}</span>
                                                 <span class="chat-message">{msgs.message}</span>
+                                                <span class="sender-chat-time">{msgs.sentAt}</span>
+                                                <i className="material-icons adjust-tick">done</i>
                                             </span>
-
                                         </span>
-
                                     );
-
                                 } else {
-
                                     return (
                                         <span class="chat friend">
-                                            <span class="user-photo"> </span>
+                                            <span class="user-photo">{msgs.sentFrom}</span>
                                             <span class="chat-message">{msgs.message}</span>
+                                            <span class="reciever-chat-time">{msgs.sentAt}</span>
+
                                         </span>
                                     );
                                 }
-
-
                             })}</div>
                         <div className="Newmsg">
-                            <input type="text" className="EnterMsgField" placeholder="" value={this.state.message} onChange={this.handleMsg} onKeyPress={this.sendClick} />
+                            <input type="text" className="EnterMsgField" placeholder="enter" value={this.state.message} onChange={this.handleMsg} onKeyPress={this.sendClick} />
                             <i className="material-icons sendButton" onClick={this.sendClick} >send</i>
                         </div>
                     </div>
                     <i class="material-icons logoutButton" onClick={this.logoutOps} >power_settings_new</i>
-
-
-
-
-
-
-
-
-
-
-
                 </div>
-
-
-
             </div>
         );
     }
     componentWillMount() {
         this.firedEvent();
-
+     
         console.log("component will mount is here")
     }
 }

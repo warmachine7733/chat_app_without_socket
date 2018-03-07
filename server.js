@@ -175,7 +175,7 @@ app.post('/home', function (req, res) {
 
               renderedArr = previousContactArr;
             }
-            else if (contact == undefined) {
+            else if (contact === undefined) {
               contactMsg = "enter a name";
               renderedArr = previousContactArr;
             }
