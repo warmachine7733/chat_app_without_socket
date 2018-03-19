@@ -204,6 +204,13 @@ cursor: pointer;
   cursor: pointer;
   top:8px;
 }
+.fileUpload{
+  position: relative;
+  left:270px;
+  cursor: pointer;
+  top:8px;
+  font-size: 10px;
+}
 
 .ContactTitle{
   position: relative;
@@ -245,7 +252,7 @@ body{
   margin:20px auto;
   box-shadow: 0 3px #ccc;
   overflow-x:hidden;
-  overflow-y: scroll;
+  overflow-y: auto;
   border: 1px solid black;
   
 }
@@ -290,6 +297,7 @@ body{
   background: #1ddced;
   order:-1;
   text-align:right;
+  overflow-y: auto;
 }
 .reciever-chat-time{
   font-size: 10px;

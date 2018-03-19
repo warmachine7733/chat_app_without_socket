@@ -4,6 +4,10 @@ var cors = require('cors');
 var router = express.Router();
 var app = new express();
 
+//file Upload
+var multer = require('multer');
+var path = require('path');
+
 var mongo = require('mongodb');
 var mongoose = require('mongoose');
 //var arr = new Array();
@@ -32,7 +36,7 @@ var Msg = require('./model/msgs.js');
 
 });
 var User = mongoose.model('Users', UserSchema);*/
-
+var flak;
 
 
 
@@ -120,14 +124,11 @@ app.post('/signin', function (req, res) {
         client.close();
 
       });
-
-
     }
   });
-
-
 });
 app.post('/home', function (req, res) {
+
   var user = req.body.data.user;
   var contact = req.body.data.contact;
   var arr = req.body.arr;
@@ -149,9 +150,9 @@ app.post('/home', function (req, res) {
           console.log("not found");
           db.collection('users').findOne({ name: user }, function (err, results) {
             if (err) throw err;
-            x = results.contact;
-            console.log("results.contact", x);
-            var renderedArr = x;
+            arrayOfContacts = results.contact;
+            console.log("results.contact", arrayOfContacts);
+            var renderedArr = arrayOfContacts;
             contact === "" || contact == undefined ? contactStatus = "" : contactStatus = "not in our db"
             console.log(contactStatus);
             res.json({
@@ -197,17 +198,19 @@ app.post('/home', function (req, res) {
   });
 });
 app.post("/message", function (req, res) {
-  var x = [];
+  var arrayOfMsgs = [];
+  var file = req.body.file;
+  console.log('file is of', typeof (file));
   var sentFrom = req.body.senderName;
   var sentTo = req.body.recieverName;
   message = req.body.RecievedMsg;
   sentAt = req.body.time;
-  console.log(sentFrom);
-  console.log(sentTo);
+  //console.log(sentFrom);
+  //console.log(sentTo);
   var selectContact;
 
-  console.log("message sent");
-  console.log(req.body.RecievedMsg);
+  //console.log("message sent");
+  //console.log(req.body.RecievedMsg);
   //console.log("to be pushed inside reciever msg", req.body.recieverObj);
   //console.log("to be pushde inside sender msg", req.body.senderObj);
   if (sentTo === '' || sentTo == undefined) {
@@ -229,12 +232,13 @@ app.post("/message", function (req, res) {
       if (err) throw err;
       else {
         db.collection('msgs').find({ $or: [{ sentFrom: sentFrom, sentTo: sentTo }, { sentFrom: sentTo, sentTo: sentFrom }] }).toArray(function (arr, result) {
-          console.log('res', result);
-          console.log('2')
-          x = result;
-          console.log(x);
+          //console.log('res', result);
+          //console.log('2')
+          arrayOfMsgs = result;
+          //console.log(x);
+         
           res.json({
-            x, message
+            arrayOfMsgs, message,sentTo
           })
         });
       }
@@ -242,11 +246,35 @@ app.post("/message", function (req, res) {
     });
     console.log('3')
   }
+
 });
 
 //getting msgs on click of radios
 app.post("/getMsg", function (req, res) {
   var x = [];
+  var freshArr = [];
+  var lengthStoringArr = [];
+  var length;
+  var testArr;
+  var lengthStoringArr;
+  db.collection('msgs').find({ $or: [{ sentFrom: sentFrom, sentTo: sentTo }, { sentFrom: sentTo, sentTo: sentFrom }] }).toArray(function (arr, result) {
+    length = result.length;
+    testArr = [{ deletedBy: sentFrom, deletedOf: sentTo, lengthTobeshown: length }]
+    //console.log(testArr, 'hi');
+    db.collection('arrays').findOne({ name: 'wtf' }, function (findErr, result) {
+      //console.log(result.val)
+      lengthStoringArr = result.val;
+     
+      lengthStoringArr = result.val.reverse();
+      console.log('this is wtf array',lengthStoringArr);
+      var index = lengthStoringArr.findIndex(x => x.deletedBy === 'jonh');
+      console.log(index, 'index is');
+      res.json({
+        x, flak,length, freshArr, lengthStoringArr
+      })
+    })
+
+  })
   console.log("got it")
   console.log(req.body);
   var sentTo = req.body.sendThis;
@@ -254,12 +282,60 @@ app.post("/getMsg", function (req, res) {
   db.collection('msgs').find({ $or: [{ sentFrom: sentFrom, sentTo: sentTo }, { sentFrom: sentTo, sentTo: sentFrom }] }).toArray(function (arr, result) {
     console.log(result);
     x = result;
-    res.json({
-      x
-    })
+    
   });
-
 });
+
+app.post("/delete", function (req, res) {
+  var freshArr = [];
+  var lengthStoringArr = [];
+
+  flak = req.body.flak;
+  var sentTo = req.body.sendThis;
+  var sentFrom = req.body.loggedInUser;
+  var deletedBy = req.body.deletedBy;
+  var deletedOf = req.body.deletedOf;
+  console.log(deletedBy);
+  console.log(deletedOf);
+  var list = 'list';
+  MongoClient.connect(url, function (err, client) {
+    if (err) {
+      console("error " + err);
+    } else {
+      console.log("connection established")
+      var db = client.db('loginapp');
+      db.collection('arrays').findOne({ name: 'deleted' }, function (findErr, result) {
+        freshArr = result.val;
+        console.log(freshArr);
+        if (freshArr.indexOf(deletedOf) != 1) {
+          console.log('didnt add as the name is already in db');
+        } else {
+          freshArr.push(deletedOf);
+          console.log(freshArr);
+          db.collection('arrays').update({ name: 'deleted' }, { $set: { val: freshArr } })
+        }
+      })
+    }
+  })
+  db.collection('msgs').find({ $or: [{ sentFrom: sentFrom, sentTo: sentTo }, { sentFrom: sentTo, sentTo: sentFrom }] }).toArray(function (arr, result) {
+    var length = result.length;
+    var testArr = [{ deletedBy: sentFrom, deletedOf: sentTo, lengthTobeshown: length }]
+    console.log(testArr, 'hi');
+    db.collection('arrays').findOne({ name: 'wtf' }, function (findErr, result) {
+      console.log(result.val)
+      var lengthStoringArr = result.val;
+      db.collection('arrays').update({ name: 'wtf' }, { $set: { val: result.val.concat(testArr) } })
+      lengthStoringArr = result.val.concat(testArr).reverse();
+      console.log(lengthStoringArr);
+      var index = lengthStoringArr.findIndex(x => x.deletedBy === 'jonh');
+      console.log(index, 'index is');
+      res.json({
+        length, freshArr, lengthStoringArr
+      })
+    })
+
+  })
+})
 app.listen(5000, function () {
   console.log(`Listening on port 5000..`);
 });

@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
 import './App.css';
 import { error } from 'util';
+import ReactDOM from 'react-dom';
+var Scroll = require('react-scroll');
+var scroll = Scroll.animateScroll;
 
 
-var names = [];
 var i;
+
 
 class Home extends Component {
     constructor(props) {
@@ -19,6 +22,12 @@ class Home extends Component {
             message: '',
             selectContact: '',
             messageArray: [],
+            deletedOf: '',
+            freshArr: [],
+            lengthOfDeletion: '',
+            flak: '',
+            file: null,
+            afterDeletionData: []
 
 
         }
@@ -30,8 +39,12 @@ class Home extends Component {
         this.sendClick = this.sendClick.bind(this);
         this.radioSelected = this.radioSelected.bind(this);
         this.handleMsg = this.handleMsg.bind(this);
-
+        this.deleteChat = this.deleteChat.bind(this);
+        this.handleFileChange = this.handleFileChange.bind(this);
+       // this.handleFile = this.handleFile.bind(this);
+        this.scrollTest = this.scrollTest.bind(this);
     }
+
 
     handleContacts(e) {
         this.setState({
@@ -44,10 +57,19 @@ class Home extends Component {
         });
 
     }
+    handleFileChange(){
+        this.setState({
+            file:this.state.file,
+        })
+        console.log(this.state.file);
+    }
 
+
+   
     logoutOps() {
         console.log(window.localStorage.getItem("lastname"));
         localStorage.removeItem("lastname");
+        localStorage.removeItem("lengthis");
         this.setState({
             localArr: []
         }, function () {
@@ -109,6 +131,11 @@ class Home extends Component {
 
     }
     sendClick(e) {
+
+
+        console.log('file is', this.state.file);
+        var file = this.state.file;
+        console.log(this.state.flak)
         var recieverName = this.state.reciever;
         if (e.which === 13 || e.which == undefined) {
 
@@ -137,7 +164,7 @@ class Home extends Component {
                     {
                         method: 'POST',
                         body: JSON.stringify({
-                            RecievedMsg, recieverName, senderName, time
+                            RecievedMsg, recieverName, senderName, time, file
                         }),
                         headers: { 'Content-Type': 'application/json' }
                     })
@@ -147,18 +174,79 @@ class Home extends Component {
                     .then((res) => {
                         this.setState({
                             selectContact: res.selectContact,
-                            messageArray: res.x,
+                            messageArray: res.arrayOfMsgs,
                             message: ''
                         })
+                        if (this.state.flak == false && res.sentTo != undefined) {
+
+                            var newArrayIs = [];
+                            for (i = window.localStorage.getItem('lengthis'); i < this.state.messageArray.length; i++) {
+                                newArrayIs = newArrayIs.concat(this.state.messageArray[i])
+
+                            }
+                            this.setState({
+                                messageArray: newArrayIs
+                            })
+
+                            console.log('new arr', newArrayIs, ' length to be shown', window.localStorage.getItem('lengthis'));
+
+                        }
                         console.log('from sever', res.message);
-                        console.log('from db', res.x);
+                        console.log('from db', res.arrayOfMsgs);
                         console.log(this.state.message);
+
+
                     })
+
             }
         }
+
+        //scroll.scrollToBottom();
     }
+
     radioSelected(e) {
         var sendThis = e.target.value;
+        var loggedInUser = window.localStorage.getItem("lastname");
+        fetch('http://localhost:5000/getMsg',
+            {
+                method: 'POST',
+
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(res =>
+                res.json()
+            )
+            .then((res) => {
+                this.setState({
+
+                    afterDeletionData: res.lengthStoringArr,
+
+
+                })
+                console.log('the real mvp ', this.state.afterDeletionData)
+                var index = res.lengthStoringArr.findIndex(x => x.deletedOf === sendThis && x.deletedBy === loggedInUser);
+                console.log(index, 'index is');
+
+                if (index != -1) {
+                    console.log('freaking length', res.lengthStoringArr[index].lengthTobeshown);
+                    console.log(window.localStorage.setItem('lengthis', res.lengthStoringArr[index].lengthTobeshown))
+                } else {
+                    window.localStorage.setItem('lengthis', 0);
+                }
+            });
+
+
+
+        console.log(this.state.flak);
+
+
+        console.log('index is', index);
+        if (this.state.afterDeletionData == undefined) {
+
+        } else {
+            var index = this.state.afterDeletionData.findIndex(x => x.deletedOf === sendThis);
+            console.log('final length', this.state.afterDeletionData[index]);
+        }
         if (sendThis === undefined) {
 
         } else {
@@ -170,12 +258,64 @@ class Home extends Component {
                 contactStat: ''
             })
         }
+
+        //console.log(window.localStorage.getItem('deletedBy'));
+        //console.log(window.localStorage.getItem('deletedOf'));
+        console.log(sendThis);
+
+        if (this.state.freshArr.indexOf(sendThis) != -1) {
+            this.setState({
+                messageArray: []
+            })
+        } else {
+
+            fetch('http://localhost:5000/getMsg',
+                {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        sendThis, loggedInUser
+                    }),
+                    headers: { 'Content-Type': 'application/json' }
+                })
+                .then(res =>
+                    res.json()
+                )
+                .then((res) => {
+                    this.setState({
+                        messageArray: res.x
+                    })
+                    console.log("get message array is", res.x)
+                    if (this.state.flak == false) {
+
+                        var newArrayIs = [];
+                        for (i = window.localStorage.getItem('lengthis'); i < this.state.messageArray.length; i++) {
+                            newArrayIs = newArrayIs.concat(this.state.messageArray[i])
+
+                        }
+                        console.log('new arr is', newArrayIs);
+                        this.setState({
+                            messageArray: newArrayIs
+                        })
+
+                    }
+                    console.log('ok testing', res.x)
+                })
+        }
+    }
+    deleteChat() {
+        console.log("clicked");
+        var sendThis = this.state.reciever;
         var loggedInUser = window.localStorage.getItem("lastname");
-        fetch('http://localhost:5000/getMsg',
+        var deletedBy = window.localStorage.getItem("lastname");
+        var deletedOf = this.state.reciever;
+        this.setState({
+            flak: false
+        })
+        fetch('http://localhost:5000/delete',
             {
                 method: 'POST',
                 body: JSON.stringify({
-                    sendThis, loggedInUser
+                    deletedBy, deletedOf, sendThis, loggedInUser,
                 }),
                 headers: { 'Content-Type': 'application/json' }
             })
@@ -184,11 +324,36 @@ class Home extends Component {
             )
             .then((res) => {
                 this.setState({
-                    messageArray: res.x
+                    freshArr: res.freshArr,
+                    messageArray: [],
+                    afterDeletionData: res.lengthStoringArr,
+
                 })
-                console.log('ok testing', res.x)
+                var lengthis = res.length
+                //console.log(res.testArr,'this is a test array');
+                console.log(res.lengthStoringArr, 'this is a test array');
+
+
+                console.log('afterDeletionData', this.state.afterDeletionData)
+                window.localStorage.setItem('lengthis', lengthis)
+                console.log('lenght from server', res.length);
+                console.log('length in local storage', window.localStorage.getItem('lengthis'));
+
+                console.log('retrieved array is', this.state.freshArr);
+
+                //window.localStorage.setItem("deletedBy", deletedBy);
+                //window.localStorage.setItem("deletedOf", deletedOf);
+                //console.log('ok testin in deleteclick', this.state.messageArray);
+                //console.log(window.localStorage.getItem('deletedBy'));
+                //console.log(window.localStorage.getItem('deletedOf'));
             })
     }
+    scrollTest() {
+        var scrollName = ReactDOM.findDOMNode(this.refs.cpDev1).value;
+        console.log(scrollName);
+
+    }
+
     render() {
         return (
             <div>
@@ -214,8 +379,9 @@ class Home extends Component {
                         </ul>
                     </div>
                     <div className="chatContainer">
-                        <div className="chatbox">
+                        <div className="chatbox" >
                             {this.state.messageArray == undefined || this.state.messageArray == [] ? console.log() : this.state.messageArray.map(function (msgs, i) {
+                                console.log(msgs);
                                 if (msgs.sentFrom === localStorage.getItem("lastname")) {
                                     return (
                                         <span class="chatlogs">
@@ -232,7 +398,7 @@ class Home extends Component {
                                         <span class="chat friend">
                                             <span class="user-photo">{msgs.sentFrom}</span>
                                             <span class="chat-message">{msgs.message}</span>
-                                            <span class="reciever-chat-time">{msgs.sentAt}</span>
+                                            <span class="reciever-chat-time" >{msgs.sentAt}</span>
 
                                         </span>
                                     );
@@ -240,17 +406,25 @@ class Home extends Component {
                             })}</div>
                         <div className="Newmsg">
                             <input type="text" className="EnterMsgField" placeholder="enter" value={this.state.message} onChange={this.handleMsg} onKeyPress={this.sendClick} />
-                            <i className="material-icons sendButton" onClick={this.sendClick} >send</i>
+
+                            <input type="file" className="fileUpload" onChange={this.handleFileChange}  />
+                            <div>{console.log(this.state.file)}></div>
+                            &nbsp; &nbsp; &nbsp;<br /><i className="material-icons sendButton" onClick={this.sendClick} >send</i>
                         </div>
                     </div>
+
                     <i class="material-icons logoutButton" onClick={this.logoutOps} >power_settings_new</i>
+                    <div><input type="button" className="logoutButton" ref="cpDev1" value="delete" onClick={this.deleteChat} /></div>
+                    <input type="button" className="logoutButton" value="scroll" onClick={this.scrollTest} />
                 </div>
+
             </div>
         );
     }
+
     componentWillMount() {
         this.firedEvent();
-     
+
         console.log("component will mount is here")
     }
 }
