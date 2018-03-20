@@ -12,7 +12,8 @@ class Signin extends Component {
             pw: '',
             status: false,
             credential: '',
-            user: ''
+            user: '',
+            signUpResult: ''
         }
 
         this.nameHandle = this.nameHandle.bind(this);
@@ -25,6 +26,7 @@ class Signin extends Component {
         })
 
     }
+
     pwHandle(e) {
         this.setState({
             pw: e.target.value
@@ -32,7 +34,7 @@ class Signin extends Component {
     }
     signinHandle(e) {
 
-         console.log("hi")
+        console.log("hi")
 
         var data = {
             'name': this.state.name,
@@ -62,10 +64,10 @@ class Signin extends Component {
                 })
 
                 user = res.dbName;
-               
+
                 console.log("signin " + this.state.user);
-               
-                window.localStorage.setItem("lastname",user)
+
+                window.localStorage.setItem("lastname", user)
                 if (res.changedStat === true) {
                     this.props.history.push({
                         pathname: '/home',
@@ -76,12 +78,19 @@ class Signin extends Component {
 
             });
 
- 
+
     }
 
     render() {
+        setTimeout(() => {
+            this.setState({
+                signUpResult: ''
+            })
+        }, 2000);
+
         return (
             <div>
+                <h4 className='success'>{this.state.signUpResult}</h4>
                 <h1 className="header">Signin</h1>
                 <div className="container">
                     <h5 className="App">{this.state.credential}</h5>
@@ -100,11 +109,20 @@ class Signin extends Component {
         )
     }
     componentWillMount() {
-     
-     console.log("hola "+window.localStorage.getItem("status"));  
-     if(window.localStorage.getItem("status")==true){
-         console.log("successful")
-     }
+        this.setState({
+            status: window.localStorage.getItem('status')
+        })
+        console.log('hola ' + this.state.status);
+        if (this.state.status == 'true') {
+            console.log('successful')
+            this.setState({
+                signUpResult: 'successful'
+            })
+        } else {
+            this.setState({
+                signUpResult: ''
+            })
+        }
     }
 
 }

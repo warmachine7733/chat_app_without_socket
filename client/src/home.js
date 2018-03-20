@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import './App.css';
-import { error } from 'util';
+
 import ReactDOM from 'react-dom';
-var Scroll = require('react-scroll');
-var scroll = Scroll.animateScroll;
+//var Scroll = require('react-scroll');
+//var scroll = Scroll.animateScroll;
 
 
 var i;
@@ -41,8 +41,9 @@ class Home extends Component {
         this.handleMsg = this.handleMsg.bind(this);
         this.deleteChat = this.deleteChat.bind(this);
         this.handleFileChange = this.handleFileChange.bind(this);
-       // this.handleFile = this.handleFile.bind(this);
-        this.scrollTest = this.scrollTest.bind(this);
+        // this.handleFile = this.handleFile.bind(this);
+        // this.scrollTest = this.scrollTest.bind(this);
+        
     }
 
 
@@ -57,15 +58,15 @@ class Home extends Component {
         });
 
     }
-    handleFileChange(){
+    handleFileChange() {
         this.setState({
-            file:this.state.file,
+            file: this.state.file,
         })
         console.log(this.state.file);
     }
 
 
-   
+
     logoutOps() {
         console.log(window.localStorage.getItem("lastname"));
         localStorage.removeItem("lastname");
@@ -82,6 +83,7 @@ class Home extends Component {
 
 
     }
+  
     firedEvent() {
 
 
@@ -137,9 +139,9 @@ class Home extends Component {
         var file = this.state.file;
         console.log(this.state.flak)
         var recieverName = this.state.reciever;
-        if (e.which === 13 || e.which == undefined) {
+        if (e.which === 13 || e.which === undefined) {
 
-            var recieverName = this.state.reciever;
+            recieverName = this.state.reciever;
             var senderName = window.localStorage.getItem("lastname");
             var RecievedMsg = this.state.message;
             console.log("message is ", this.state.message);
@@ -227,9 +229,10 @@ class Home extends Component {
                 var index = res.lengthStoringArr.findIndex(x => x.deletedOf === sendThis && x.deletedBy === loggedInUser);
                 console.log(index, 'index is');
 
-                if (index != -1) {
+                if (index !== -1) {
                     console.log('freaking length', res.lengthStoringArr[index].lengthTobeshown);
-                    console.log(window.localStorage.setItem('lengthis', res.lengthStoringArr[index].lengthTobeshown))
+                    window.localStorage.setItem('lengthis', res.lengthStoringArr[index].lengthTobeshown)
+                    console.log('hi', window.localStorage.getItem('lengthis'))
                 } else {
                     window.localStorage.setItem('lengthis', 0);
                 }
@@ -240,8 +243,8 @@ class Home extends Component {
         console.log(this.state.flak);
 
 
-        console.log('index is', index);
-        if (this.state.afterDeletionData == undefined) {
+        //console.log('index is', index);
+        if (this.state.afterDeletionData === undefined) {
 
         } else {
             var index = this.state.afterDeletionData.findIndex(x => x.deletedOf === sendThis);
@@ -263,7 +266,7 @@ class Home extends Component {
         //console.log(window.localStorage.getItem('deletedOf'));
         console.log(sendThis);
 
-        if (this.state.freshArr.indexOf(sendThis) != -1) {
+        if (this.state.freshArr.indexOf(sendThis) !== -1) {
             this.setState({
                 messageArray: []
             })
@@ -348,11 +351,7 @@ class Home extends Component {
                 //console.log(window.localStorage.getItem('deletedOf'));
             })
     }
-    scrollTest() {
-        var scrollName = ReactDOM.findDOMNode(this.refs.cpDev1).value;
-        console.log(scrollName);
 
-    }
 
     render() {
         return (
@@ -360,12 +359,12 @@ class Home extends Component {
                 <div>
                     <h5 className="HomeContainer">welcome <b>{window.localStorage.getItem("lastname")}</b></h5>
                     <div className="Contacts">
-                        <span className="ContactTitle">Contacts</span>
-                        <form action="/home" >
-                            <input type="text" placeholder="add contacts" className="InputField3" onChange={this.handleContacts} required value={this.state.contact} />
-                            <i onClick={this.firedEvent} className=" material-icons AddButton" >library_add</i>
-                        </form>
-                        <span>{this.state.contactStat}{this.state.contactMsg}{this.state.cantAddOwn}{this.state.selectContact}</span>
+                        <span className="ContactTitle">Contacts</span><br/>
+                     
+                            <input type="text" placeholder="add contacts" className="InputField3" onChange={this.handleContacts} required value={this.state.contact}/>
+                            <i onClick={this.firedEvent} className=" material-icons AddButton" title="add" >library_add</i>
+                      
+                        <div>{this.state.contactStat}{this.state.contactMsg}{this.state.cantAddOwn}{this.state.selectContact}</div>
                         <br /><br /><br />
                         <ul onClick={this.radioSelected}>
                             {this.state.localArr === undefined ? console.log() : this.state.localArr.map(function (name, index) {
@@ -380,7 +379,7 @@ class Home extends Component {
                     </div>
                     <div className="chatContainer">
                         <div className="chatbox" >
-                            {this.state.messageArray == undefined || this.state.messageArray == [] ? console.log() : this.state.messageArray.map(function (msgs, i) {
+                            {this.state.messageArray === undefined || this.state.messageArray === [] ? console.log() : this.state.messageArray.map(function (msgs, i) {
                                 console.log(msgs);
                                 if (msgs.sentFrom === localStorage.getItem("lastname")) {
                                     return (
@@ -407,15 +406,14 @@ class Home extends Component {
                         <div className="Newmsg">
                             <input type="text" className="EnterMsgField" placeholder="enter" value={this.state.message} onChange={this.handleMsg} onKeyPress={this.sendClick} />
 
-                            <input type="file" className="fileUpload" onChange={this.handleFileChange}  />
-                            <div>{console.log(this.state.file)}></div>
-                            &nbsp; &nbsp; &nbsp;<br /><i className="material-icons sendButton" onClick={this.sendClick} >send</i>
+
+                            &nbsp; &nbsp; &nbsp;<i className="material-icons sendButton" onClick={this.sendClick} title="send">send</i>
                         </div>
                     </div>
 
-                    <i class="material-icons logoutButton" onClick={this.logoutOps} >power_settings_new</i>
-                    <div><input type="button" className="logoutButton" ref="cpDev1" value="delete" onClick={this.deleteChat} /></div>
-                    <input type="button" className="logoutButton" value="scroll" onClick={this.scrollTest} />
+                    <i class="material-icons logoutButton" onClick={this.logoutOps} title="signout" >power_settings_new</i>
+                    <div><i className="material-icons deleteButton" onClick={this.deleteChat} title="delete chat">delete_forever</i></div>
+
                 </div>
 
             </div>

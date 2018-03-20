@@ -21,21 +21,7 @@ var url = 'mongodb://localhost:27017/loginapp';
 var User = require('./model/index');
 //var UserSchema = require('./model/index');
 var Msg = require('./model/msgs.js');
-// User Schema
-/*var UserSchema = mongoose.Schema({
-  name: {
-    type: String,
-    index: true
-  },
-  password: {
-    type: String
-  },
-  email: {
-    type: String
-  },
 
-});
-var User = mongoose.model('Users', UserSchema);*/
 var flak;
 
 

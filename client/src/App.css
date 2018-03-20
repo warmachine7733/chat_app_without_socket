@@ -317,3 +317,19 @@ body{
   left:22px;
   font-size:16px;
 }
+.success{
+  color: #4F8A10;
+  background-color: #DFF2BF;
+  position: relative;
+  top:20px;
+  width:100px;
+  font-family: 'Times New Roman', Times, serif;
+  
+}
+.deleteButton{
+  position: relative;
+  left:950px;
+  top:-430px;
+  color: rgb(247, 57, 57);
+  cursor: pointer;
+  }
