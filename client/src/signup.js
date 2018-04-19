@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 //import { Link } from 'react-router-dom';
+import "isomorphic-fetch";
 
 class Signup extends Component {
   constructor(props) {
@@ -50,7 +51,7 @@ class Signup extends Component {
       'pw': this.state.pw,
       'status': this.state.status,
     }
-    e.preventDefault();
+   // e.preventDefault();
     fetch('http://localhost:5000/',
       {
         method: 'POST',
